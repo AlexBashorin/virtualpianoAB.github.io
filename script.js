@@ -1,6 +1,6 @@
 const piano = document.querySelector('.piano');
 const pianoKeys = document.querySelectorAll('.piano-key');
-const audio = document.querySelectorAll('audio[data-key]');
+const audio = document.querySelectorAll('audio');
 
 //MOUSE
 function mousePlay(event) {
@@ -35,28 +35,42 @@ document.addEventListener('mouseup', mouseStop);
 
 
 //KEYBOARD
-function removeTransition(e) {
-  if (e.propertyName !== "transform") return;
-  this.classList.remove("playing");
+function keyPlay (pressedKey, event) {
+  if (event.repeat) return;
+  if(typeof(pressedKey) == "string") {
+      for(let i = 0; i<audio.length; i++) {
+          if (audio[i].dataset.letter == pressedKey) {
+            audio[i].currentTime = 0;
+            audio[i].play();
+          }
+      for(let i = 0; i<pianoKeys.length; i++) {
+          if (pianoKeys[i].dataset.letter == pressedKey) {
+              pianoKeys[i].classList.add("piano-key-active")
+          }
+      }
+  } 
+}
 }
 
+function keyRemove (pressedKey) {
+  if(typeof(pressedKey) == "string") {
 
-window.addEventListener('keydown', function(event) {
-  if(event.repeat) return
-  const pianoKeys = document.querySelectorAll(`.piano-key[data-letter="${event.keyCode}"]`);
-  const audio = document.querySelector(`audio[data-key="${event.keyCode}"]`);
-  if(event.code === audio.dataset.key) 
-  if(!audio) return
-  audio.currentTime = 0;
-  audio.play();
-  pianoKeys.classList.add('piano-key-active', 'piano-key-pseudo');
-});
+      for(let i = 0; i<pianoKeys.length; i++) {
 
-function ifKeydown(event) {
-  if(event.type === 'keydown') {
-    
+          if (pianoKeys[i].dataset.letter == pressedKey) {
+              pianoKeys[i].classList.remove("piano-key-active")
+          }
+      }
   }
 }
+
+window.addEventListener("keydown", (event) => {
+  keyPlay(event.code[event.code.length-1], event);
+})
+
+window.addEventListener("keyup", (event) => {
+  keyRemove(event.code[event.code.length-1]);
+})
 
 
 //NOTES and LETTERS
@@ -81,4 +95,7 @@ buttons.addEventListener('click', function(event) {
     })
   }
 })
+
+
+
 
